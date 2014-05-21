@@ -18,7 +18,7 @@ describe HTMLCleanup do
       @htmlcleanup.should be_an_instance_of HTMLCleanup
     end
 
-    it "throws an ArgumentError when given fewere than 3 parameters" do
+    it "throws an ArgumentError when given fewere than 1 parameters" do
       lambda { HTMLCleanup.new }.should raise_exception ArgumentError
     end
   end
@@ -37,12 +37,22 @@ describe HTMLCleanup do
 
   describe "#pdf_cleanup" do
     it "requires a hash" do
-      lambda { HTMLCleanup.new.pdf_cleanup("testing") }.should raise_exception ArgumentError
+      lambda { @htmlcleanup.pdf_cleanup("testing") }.should raise_error("Not a Hash")
     end
     it "requires regular expressions in the hash" do
-      bad_regexes.each do |regex, replace|
-        lambda { HTMLCleanup.new.pdf_cleanup(bad_regexes) }.should raise_exeption Argument Error
-      end
+      lambda { @htmlcleanup.pdf_cleanup({ 1 => "hello" }) }.should raise_error("non regular expression in hash")
+    end
+    it "requires replacement string in the hash" do
+      lambda { @htmlcleanup.pdf_cleanup({ /\d/ => 1 }) }.should raise_error("non string in replacemet position in hash")
+    end
+    it "changes the file string with the regexes" do
+      regexes = {
+		/size=\"[\d+]+\"/i => "",
+		/<font\s+>/i => "",
+		/<p[\s\n]+>/i => "<p>"
+        }
+      @test = HTMLCleanup.new file
+      @test.pdf_cleanup(regexes).should eql HTMLCleanup.new("correct_edits.html").load
     end
   end
 end
