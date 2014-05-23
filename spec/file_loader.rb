@@ -47,12 +47,19 @@ describe HTMLCleanup do
     end
     it "changes the file string with the regexes" do
       regexes = {
-		/size=\"[\d+]+\"/i => "",
-		/<font\s+>/i => "",
-		/<p[\s\n]+>/i => "<p>"
+		/<p[\s\n]+>/i => "<p>",
+                /  remove\sme\n/i => ""
         }
-      @test = HTMLCleanup.new file
-      @test.pdf_cleanup(regexes).should eql HTMLCleanup.new("correct_edits.html").load
+      @htmlcleanup.load
+      @htmlcleanup.pdf_cleanup(regexes)
+      @htmlcleanup.loaded_file.should eql HTMLCleanup.new("correct_edits.html").load
+    end
+  end
+
+  describe "#disclaimer" do
+    it "should ask for a UID if it can't figure one out" do
+      STDOUT.should_receive(:puts).with("Which Collection should we use for the disclaimer link?")
+      @htmlcleanup.disclaimer
     end
   end
 end
