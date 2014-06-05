@@ -1,5 +1,5 @@
 class HTMLCleanup
-  attr_accessor :file, :loaded_file
+  attr_accessor :file, :loaded_file, :doc, :file_name
   def initialize file
     @file = file
   end
@@ -27,7 +27,7 @@ class HTMLCleanup
   end
   def disclaimer
 	#uid = gets.chomp
-        doc = @file.to_s.sub(/\.html?/, '').downcase
+        @doc = @file.to_s.sub(/\.html?/, '').downcase
 
         #find the uid by the file name
         collection_identifiyer = doc.sub(/r\d+/i, '')
@@ -58,7 +58,7 @@ class HTMLCleanup
             collection = gets.chomp
         end
 
-        uid = collection.gsub(/_/, '').downcase + doc
+        uid = collection.gsub(/_/, '').downcase + @doc
 
 	regex = /(\(Rev.\s?\d+,.*<\/p>)/i
 
@@ -68,7 +68,10 @@ class HTMLCleanup
   end
 
   def save
-
+    @file_name = "edited_" + @file
+    the_file = open(@file_name, "w")
+    the_file.write(@loaded_file)
+    the_file.close
   end
 
 end
